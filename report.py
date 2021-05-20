@@ -9,7 +9,8 @@ import airtable
 import requests
 import diskcache
 
-from collections import Counter
+from jmespath import search as q
+from collections import defaultdict, Counter
 
 # get the .env file
 dotenv.load_dotenv()
@@ -25,12 +26,32 @@ cache = diskcache.Cache('cache', eviction_policy="none")
 mapping = json.load(open('mapping.json'))
 
 def main():
-    counter = Counter()
+
+    # kind of neat little datastructure that lets you count things 
+    # by doing this without worry about missing keys:
+    # > counter['wikidata']['person']['birth_data'] += 1
+    counter = defaultdict(lambda: defaultdict(Counter))
+
+    # keep track of number of entities
+    entity_count = wikidata_count = snac_count = 0
+
+    # count everything
     for e in get_entities():
+        entity_count += 1
         if e['wikidata_id']:
+            wikidata_count += 1 
             count_wikidata(e['wikidata_id'], counter)
         if e['snac_id']:
+            snac_count += 1
             count_snac(e['snac_id'], counter)
+
+        if wikidata_count > 25:
+            break
+
+    for service, entity_counts in counter.items():
+        for entity_type, prop_counts in entity_counts.items():
+            for prop, count in prop_counts.items():
+                print(service, entity_type, prop, count, count / entity_count)
 
 def get_entities():
     table = airtable.Airtable(base_id, 'CPF Authorities', key)
@@ -46,8 +67,14 @@ def get_entities():
 
 
 def count_wikidata(wikidata_id, counter):
-    g = get_wikidata(wikidata_id)
-    print('wd', wikidata_id)
+    e = get_wikidata(wikidata_id)
+    for entity_type, entity_map in mapping['wikidata'].items():
+        for prop_name, query in entity_map.items():
+            result = q(f'entities.{wikidata_id}.{query}', e)
+            if type(result) == list and len(result) > 0:
+                counter['wikidata'][entity_type][prop_name] += 1
+            print(entity_type, prop_name, query)
+
 
 def count_snac(snac_id, counter):
     con = get_snac(snac_id)
@@ -66,17 +93,12 @@ def get_snac(snac_id):
 
 @cache.memoize()
 def get_wikidata(wikidata_id):
-    url = f'https://www.wikidata.org/wiki/Special:EntityData/{wikidata_id}.jsonld'
+    url = f'https://www.wikidata.org/wiki/Special:EntityData/{wikidata_id}.json'
     resp = requests.get(url)
     if resp.status_code == 200:
-        return rdflib.Graph().parse(data=resp.text, format='json-ld')
+        return resp.json()
     else:
         return None
-
-#def count_wikidata(wikidata_id, obj, counter):
-#    for entity_type, entity_map in mapping['wikidata'].items():
-#        for prop_name, prop_id in entity_map.items():
-#            pass
 
 if __name__ == "__main__":
     main()

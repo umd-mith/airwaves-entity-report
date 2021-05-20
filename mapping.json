@@ -1,8 +1,13 @@
 {
-    "wikidata": {
-        "person": {
-            "date_of_birth": "P569"
+    "person": {
+
+        "date_of_birth": {
+            "wikidata": "claims.P569[].mainsnak.datavalue.value.time"
+        },
+
+        "place_of_birth": {
+            "wikidata": "claims.P199999999[].mainsnak.datavalue.value.id"
         }
+
     }
 }
-    
