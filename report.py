@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
 import os
+import csv
 import sys
 import json
 import dotenv
-import rdflib
 import airtable
+import jmespath
 import requests
 import diskcache
 
-from jmespath import search as q
 from collections import defaultdict, Counter
 
 # get the .env file
@@ -27,31 +27,54 @@ mapping = json.load(open('mapping.json'))
 
 def main():
 
-    # kind of neat little datastructure that lets you count things 
-    # by doing this without worry about missing keys:
-    # > counter['wikidata']['person']['birth_data'] += 1
+    # kind of a neat little data structure that lets you count a 
+    # hierarchy of things without worrying about missing keys, e.g.
+    # counter['Person']['date_of_birth']['wikidata'] += 1
     counter = defaultdict(lambda: defaultdict(Counter))
-
-    # keep track of number of entities
-    entity_count = wikidata_count = snac_count = 0
+    entity_count = 0
 
     # count everything
     for e in get_entities():
         entity_count += 1
+        entity_type = e['type']
+
         if e['wikidata_id']:
-            wikidata_count += 1 
             count_wikidata(e['wikidata_id'], counter)
         if e['snac_id']:
-            snac_count += 1
             count_snac(e['snac_id'], counter)
 
-        if wikidata_count > 25:
-            break
+    out = csv.writer(open('report.csv', 'w'))
+    out.writerow([
+        'entity_type',
+        'property', 
+        'wikidata_count',
+        'wikidata_percent',
+        'snac_count',
+        'snac_percent',
+    ])
+    for entity_type, entity_counts in counter.items():
+        for prop, service_counts in entity_counts.items():
 
-    for service, entity_counts in counter.items():
-        for entity_type, prop_counts in entity_counts.items():
-            for prop, count in prop_counts.items():
-                print(service, entity_type, prop, count, count / entity_count)
+            wikidata_count = service_counts.get('wikidata', 0)
+            wikidata_type_count = counter[entity_type]['count']['wikidata']
+            wikidata_percent = wikidata_count / wikidata_type_count
+
+            snac_count = service_counts.get('snac', 0)
+
+            snac_type_count = counter[entity_type]['count']['snac']
+            if snac_type_count > 0:
+                snac_percent = snac_count / snac_type_count
+            else:
+                snac_percent = 0
+
+            out.writerow([
+                entity_type,
+                prop,
+                wikidata_count,
+                wikidata_percent,
+                snac_count,
+                snac_percent
+            ])
 
 def get_entities():
     table = airtable.Airtable(base_id, 'CPF Authorities', key)
@@ -67,18 +90,40 @@ def get_entities():
 
 
 def count_wikidata(wikidata_id, counter):
-    e = get_wikidata(wikidata_id)
-    for entity_type, entity_map in mapping['wikidata'].items():
-        for prop_name, query in entity_map.items():
-            result = q(f'entities.{wikidata_id}.{query}', e)
-            if type(result) == list and len(result) > 0:
-                counter['wikidata'][entity_type][prop_name] += 1
-            print(entity_type, prop_name, query)
+    print('wikidata', wikidata_id)
+    entity = get_wikidata(wikidata_id)
+    for entity_type, entity_map in mapping.items():
+        for prop_name, queries in entity_map.items():
+            query = queries.get('wikidata')
+            if not query:
+                continue
 
+            counter[entity_type]['count']['wikidata'] += 1
+
+            jq = f'entities.{wikidata_id}.claims.{query}'
+            result = jmespath.search(jq, entity)
+            if type(result) == list and len(result) > 0:
+                counter[entity_type][prop_name]['wikidata'] += 1
+            elif result != None:
+                sys.exit(f'unexpected jmespath response: {result}')
 
 def count_snac(snac_id, counter):
-    con = get_snac(snac_id)
     print('snac', snac_id)
+    entity= get_snac(snac_id)
+    for entity_type, entity_map in mapping.items():
+        for prop_name, queries in entity_map.items():
+            query = queries.get('snac')
+            if not query:
+                continue
+
+            counter[entity_type]['count']['snac'] += 1
+
+            jq = f'constellation.{query}'
+            result = jmespath.search(jq, entity)
+            if type(result) == list and len(result) > 0:
+                counter[entity_type][prop_name]['snac'] += 1
+            if type(result) != list and result != None:
+                sys.exit(f'unexpected jmespath response: {result}')
 
 @cache.memoize()
 def get_snac(snac_id):

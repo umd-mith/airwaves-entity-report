@@ -1,13 +1,102 @@
 {
-    "person": {
+    "Person": {
 
         "date_of_birth": {
-            "wikidata": "claims.P569[].mainsnak.datavalue.value.time"
+            "wikidata": "P569",
+            "snac": "dates[].fromDate"
         },
 
         "place_of_birth": {
-            "wikidata": "claims.P199999999[].mainsnak.datavalue.value.id"
+            "wikidata": "P19"
+        },
+
+        "date_of_death": {
+            "wikidata": "P570",
+            "snac": "dates[].toDate"
+        },
+
+        "description": {
+            "snac": "biogHists[].text"
+        },
+
+        "place_of_death": {
+            "wikidata": "P20"
+        },
+
+        "occupation": {
+            "wikidata": "P106"
+        },
+
+        "field_of_work": {
+            "wikidata": "P101"
+        },
+
+        "employer": {
+            "wikidata": "P108"
+        },
+
+        "member_of": {
+            "wikidata": "P463"
+        },
+
+        "snac_id": {
+            "wikidata": "P3430"
+        },
+
+        "loc_id": {
+            "wikidata": "P244"
+        }
+
+    },
+
+    "Corporate Body": {
+
+        "instance_of": {
+            "wikidata": "P31"
+        },
+
+        "inception": {
+            "wikidata": "P571"
+        },
+
+        "licensed_to_broadcast_to": {
+            "wikidata": "P1408"
+        },
+
+        "administrative_territory": {
+            "wikidata": "P131"
+        },
+
+        "country": {
+            "wikidata": "P17"
+        },
+
+        "member_of": {
+            "wikidata": "P463"
+        },
+
+        "snac_id": {
+            "wikidata": "P3430"
+        },
+
+        "loc_id": {
+            "wikidata": "P244"
+        },
+
+        "viaf_id": {
+            "wikidata": "P214"
+        },
+
+        "owned_by": {
+            "wikidata": "P127"
+        },
+
+        "website": {
+            "wikidata": "P856"
         }
 
     }
+
 }
+
+
