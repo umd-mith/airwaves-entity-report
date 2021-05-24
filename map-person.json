@@ -1,0 +1,49 @@
+{
+
+    "date_of_birth": {
+        "wikidata": "P569",
+        "snac": "dates[].fromDate"
+    },
+
+    "place_of_birth": {
+        "wikidata": "P19"
+    },
+
+    "date_of_death": {
+        "wikidata": "P570",
+        "snac": "dates[].toDate"
+    },
+
+    "description": {
+        "snac": "biogHists[].text"
+    },
+
+    "place_of_death": {
+        "wikidata": "P20"
+    },
+
+    "occupation": {
+        "wikidata": "P106"
+    },
+
+    "field_of_work": {
+        "wikidata": "P101"
+    },
+
+    "employer": {
+        "wikidata": "P108"
+    },
+
+    "member_of": {
+        "wikidata": "P463"
+    },
+
+    "snac_id": {
+        "wikidata": "P3430"
+    },
+
+    "loc_id": {
+        "wikidata": "P244"
+    }
+
+}
