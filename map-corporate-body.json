@@ -1,46 +1,55 @@
 {
+    "label": {
+        "wikidata": "labels.en.value"
+    },
+
     "instance_of": {
-        "wikidata": "P31"
+        "wikidata": "claims.P31"
     },
 
     "inception": {
-        "wikidata": "P571"
+        "wikidata": "claims.P571"
     },
 
     "licensed_to_broadcast_to": {
-        "wikidata": "P1408"
+        "wikidata": "claims.P1408"
     },
 
     "administrative_territory": {
-        "wikidata": "P131"
+        "wikidata": "claims.P131"
     },
 
     "country": {
-        "wikidata": "P17"
+        "wikidata": "claims.P17"
+    },
+
+    "description": {
+        "wikidata": "descriptions.en.value",
+        "snac": "biogHists[].text"
     },
 
     "member_of": {
-        "wikidata": "P463"
+        "wikidata": "claims.P463"
     },
 
     "snac_id": {
-        "wikidata": "P3430"
+        "wikidata": "claims.P3430"
     },
 
     "loc_id": {
-        "wikidata": "P244"
+        "wikidata": "claims.P244"
     },
 
     "viaf_id": {
-        "wikidata": "P214"
+        "wikidata": "claims.P214"
     },
 
     "owned_by": {
-        "wikidata": "P127"
+        "wikidata": "claims.P127"
     },
 
     "website": {
-        "wikidata": "P856"
+        "wikidata": "claims.P856"
     }
 
 }

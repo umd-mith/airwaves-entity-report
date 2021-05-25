@@ -22,9 +22,6 @@ base_id = 'appjfPJhxo9IHh8ld'
 # use a cache to prevent repeated wikidata/snac api lookups
 cache = diskcache.Cache('cache', eviction_policy="none")
 
-# the mapping of properties to count
-mapping = json.load(open('mapping.json'))
-
 def main():
     write_csv('Person', 'map-person.json')
     write_csv('Corporate Body', 'map-corporate-body.json')
@@ -55,7 +52,7 @@ def get_row(entity, entity_map):
             if query:
                 if service == 'wikidata' and entity.get('wikidata_id'):
                     obj = get_wikidata(entity['wikidata_id'])
-                    query = f'entities.{entity["wikidata_id"]}.claims.{query}'
+                    query = f'entities.{entity["wikidata_id"]}.{query}'
                     result = count_results(query, obj)
                     print(entity['wikidata_id'], query, result)
                 elif service == 'snac' and entity.get('snac_id'):
@@ -101,6 +98,8 @@ def get_wikidata(wikidata_id):
 def count_results(query, obj):
     result = jmespath.search(query, obj)
     if type(result) == list:
+        return 1
+    elif type(result) == str:
         return 1
     elif result is not None:
         sys.exit(f'unknown jmespath result: {result}')

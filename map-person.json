@@ -1,49 +1,54 @@
 {
+    "label": {
+        "wikidata": "labels.en.value"
+    },
 
     "date_of_birth": {
-        "wikidata": "P569",
+        "wikidata": "claims.P569",
         "snac": "dates[].fromDate"
     },
 
     "place_of_birth": {
-        "wikidata": "P19"
+        "wikidata": "claims.P19"
     },
 
     "date_of_death": {
-        "wikidata": "P570",
+        "wikidata": "claims.P570",
         "snac": "dates[].toDate"
     },
 
     "description": {
+        "wikidata": "descriptions.en.value",
         "snac": "biogHists[].text"
     },
 
     "place_of_death": {
-        "wikidata": "P20"
+        "wikidata": "claims.P20"
     },
 
     "occupation": {
-        "wikidata": "P106"
+        "wikidata": "claims.P106",
+        "snac": "occupations[].term.term"
     },
 
     "field_of_work": {
-        "wikidata": "P101"
+        "wikidata": "claims.P101"
     },
 
     "employer": {
-        "wikidata": "P108"
+        "wikidata": "claims.P108"
     },
 
     "member_of": {
-        "wikidata": "P463"
+        "wikidata": "claims.P463"
     },
 
     "snac_id": {
-        "wikidata": "P3430"
+        "wikidata": "claims.P3430"
     },
 
     "loc_id": {
-        "wikidata": "P244"
+        "wikidata": "claims.P244"
     }
 
 }
